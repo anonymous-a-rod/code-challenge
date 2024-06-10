@@ -20,8 +20,8 @@ module Google
     end
 
     def errors
-      return ["Invalid Google search path, URL must begin with 'https://www.google.com/search?'"] unless valid_google_search_path?
-      return ["Response code: #{response.code}, message: #{response.message}"] unless response_ok?
+      return google_search_errors unless valid_google_search_path?
+      return response_errors unless response_ok?
       @errors ||= carousel.errors
     end
 
@@ -33,20 +33,31 @@ module Google
       @carousel ||= carousel_constructor.new document
     end
 
-    def valid_google_search_path?
-      url_path.start_with? 'https://www.google.com/search?'
+    def document
+      nokogiri_html_constructor.parse response.body
+    end
+
+    def response_errors
+      @response_errors ||=
+        ["Response code: #{response.code}, message: #{response.message}"]
     end
 
     def response_ok?
-      response.code == 200
+      @response_ok ||= response.code == 200
     end
 
     def response
       @response ||= httparty_constructor.get url_path
     end
 
-    def document
-      nokogiri_html_constructor.parse response.body
+    def google_search_errors
+      @google_search_errors ||=
+        ["Invalid Google search path, URL must begin with 'https://www.google.com/search?'"]
+    end
+
+    def valid_google_search_path?
+      @valid_google_search_path ||=
+        url_path.start_with? 'https://www.google.com/search?'
     end
   end
 end
