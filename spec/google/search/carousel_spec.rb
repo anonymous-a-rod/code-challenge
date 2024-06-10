@@ -54,8 +54,9 @@ module Google
           end
 
           before do
-            allow(document).to receive(:at_css).with(".Xdlr0d").
+            allow(document).to receive(:at_css).with('.BNeawe.wyrwXc.AP7Wnd').
               and_return title_element
+
             allow(title_element).to receive(:text) { title } if title_element
           end
         end
@@ -63,34 +64,34 @@ module Google
         describe '#json' do
           subject { carousel.json }
 
-          # context 'no errors' do
-          #   include_context 'allow carousel_container'
-          #   include_context 'allow carousel_item'
+          context 'no errors' do
+            include_context 'allow carousel_container'
+            include_context 'allow carousel_item'
 
-          #   context 'no title element' do
-          #     include_context 'allow title', nil
+            context 'no title element' do
+              include_context 'allow title', nil
   
-          #     it 'is the JSON object' do
-          #       is_expected.to eq({ 'Unknown Title' => [{}] })
-          #     end
-          #   end
+              it 'is the JSON object' do
+                is_expected.to eq({ 'Unknown Title' => [{}] }.to_json)
+              end
+            end
 
-          #   context 'title is empty' do
-          #     include_context 'allow title', ''
+            context 'title is empty' do
+              include_context 'allow title', ''
   
-          #     it 'is the JSON object' do
-          #       is_expected.to eq({ 'Unknown Title' => [{}] })
-          #     end
-          #   end
+              it 'is the JSON object' do
+                is_expected.to eq({ 'Unknown Title' => [{}] }.to_json)
+              end
+            end
 
-          #   context 'title is present' do
-          #     include_context 'allow title', 'Sample Title'
+            context 'title is present' do
+              include_context 'allow title', 'Sample Title'
   
-          #     it 'is the JSON object' do
-          #       is_expected.to eq({ title => [{}] })
-          #     end
-          #   end
-          # end
+              it 'is the JSON object' do
+                is_expected.to eq({ 'Sample Title' => [{}] }.to_json)
+              end
+            end
+          end
 
           context 'has errors' do
             before do

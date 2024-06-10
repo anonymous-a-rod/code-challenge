@@ -49,7 +49,7 @@ module Google
       def title
         text = ''
         text = title_element.text if title_element
-        return text unless text.nil? && text.empty?
+        return text unless text.nil? || text.empty?
         @title = 'Unknown Title'
       end
 

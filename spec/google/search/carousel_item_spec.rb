@@ -116,7 +116,7 @@ module Google
 
         describe '#errors' do
           subject { carousel_item.errors }
-  
+
           it 'is the errors' do
             is_expected.to eq []
           end

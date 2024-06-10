@@ -16,13 +16,13 @@ module Google
 
     def carousel_json
       return nil unless errors.empty?
-      carousel.json
+      @carousel_json ||= carousel.json
     end
 
     def errors
       return ["Invalid Google URL search path"] unless valid_google_search_path?
       return ["Response code: #{response.code}, message: #{response.message}"] unless response_ok?
-      @errors ||= carousel_errors
+      @errors ||= carousel.errors
     end
 
   private
@@ -32,10 +32,6 @@ module Google
 
     def carousel
       @carousel ||= carousel_constructor.new document
-    end
-
-    def carousel_errors
-      @carousel_errors ||= carousel.errors
     end
 
     def valid_google_search_path?
