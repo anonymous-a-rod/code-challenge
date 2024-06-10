@@ -5,19 +5,16 @@ require_relative '../../../lib/google/search/carousel_item'
 module Google
   module Search
     describe CarouselItem do
-      describe '::new' do
-        let(:item_html) { Nokogiri::HTML::DocumentFragment }
-        let(:carousel_item) { described_class.new item_html }
+      let(:item_html) { Nokogiri::HTML::DocumentFragment }
+      let(:carousel_item) { described_class.new item_html }
 
+      describe '::new' do
         it 'instantiates' do
           expect(carousel_item).to be_a described_class
         end
       end
 
       describe 'instance methods' do
-        let(:item_html) { }
-        let(:carousel_item) { CarouselItem.new item_html }
-
         describe '#to_h' do
           subject { carousel_item.to_h }
 
@@ -57,7 +54,7 @@ module Google
             end
           end
 
-          context 'item_html is missing name' do
+          context 'item_html is missing the name' do
             let(:item_html) do
               Nokogiri::HTML(
                 '<a class="BVG0Nb OxTOff" href="/search?some_random_text_abc">
@@ -88,37 +85,20 @@ module Google
               }
             end
 
-            it 'is the hash with img alt value for name' do
+            it 'is a hash with all the values present with img alt for the name value' do
               is_expected.to eq expected_hash
             end
           end
 
           context 'item_html is empty' do
-            let(:item_html) do
-              Nokogiri::HTML(
-                ''
-              )
-            end
+            let(:item_html) { Nokogiri::HTML('') }
             let(:expected_hash) do
-              {
-                name: nil,
-                extensions: [nil],
-                link: nil,
-                image: nil
-              }
+              { name: nil, extensions: [nil], link: nil, image: nil }
             end
 
             it 'is the hash with no values' do
               is_expected.to eq expected_hash
             end
-          end
-        end
-
-        describe '#errors' do
-          subject { carousel_item.errors }
-
-          it 'is the errors' do
-            is_expected.to eq []
           end
         end
       end

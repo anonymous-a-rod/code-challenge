@@ -20,15 +20,14 @@ module Google
     end
 
     def errors
-      return ["Invalid Google URL search path"] unless valid_google_search_path?
+      return ["Invalid Google search path, URL must begin with 'https://www.google.com/search?'"] unless valid_google_search_path?
       return ["Response code: #{response.code}, message: #{response.message}"] unless response_ok?
       @errors ||= carousel.errors
     end
 
   private
-    attr_accessor :carousel_constructor, :httparty_constructor,
+    attr_accessor :url_path, :carousel_constructor, :httparty_constructor,
       :nokogiri_html_constructor
-    attr_reader :url_path
 
     def carousel
       @carousel ||= carousel_constructor.new document

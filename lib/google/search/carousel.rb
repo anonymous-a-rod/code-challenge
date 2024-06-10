@@ -28,8 +28,7 @@ module Google
       end
 
     private
-      attr_accessor :carousel_item_constructor
-      attr_reader :document
+      attr_accessor :document, :carousel_item_constructor
 
       def carousel_container
         @carousel_container ||= document.at_css CAROUSEL_CONTAINER_CLASS

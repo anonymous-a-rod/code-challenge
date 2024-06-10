@@ -29,7 +29,7 @@ module Google
             allow(document).to receive(:at_css).with(".BNeawe.wyrwXc.AP7Wnd").
               and_return carousel_container
             allow(carousel_container).to receive(:css).with(".BVG0Nb.OxTOff").
-              and_return([])
+              and_return []
           end
         end
 
@@ -43,7 +43,7 @@ module Google
             allow(carousel_container).to receive(:css).with(".BVG0Nb.OxTOff").
               and_return [carousel_item]
             allow(CarouselItem).to receive(:new) { carousel_item }
-            allow(carousel_item).to receive(:to_h) {}
+            allow(carousel_item).to receive(:to_h)
           end
         end
 
@@ -56,13 +56,20 @@ module Google
           before do
             allow(document).to receive(:at_css).with('.BNeawe.wyrwXc.AP7Wnd').
               and_return title_element
-
             allow(title_element).to receive(:text) { title } if title_element
           end
         end
 
         describe '#json' do
           subject { carousel.json }
+
+          context 'has errors' do
+            before do
+              allow(carousel).to receive(:errors) { ['No carousel detected'] }
+            end
+
+            it { is_expected.to be_nil }
+          end
 
           context 'no errors' do
             include_context 'allow carousel_container'
@@ -71,7 +78,7 @@ module Google
             context 'no title element' do
               include_context 'allow title', nil
   
-              it 'is the JSON object' do
+              it 'is the JSON with "Uknown Title"' do
                 is_expected.to eq({ 'Unknown Title' => [{}] }.to_json)
               end
             end
@@ -79,7 +86,7 @@ module Google
             context 'title is empty' do
               include_context 'allow title', ''
   
-              it 'is the JSON object' do
+              it 'is the JSON with "Uknown Title"' do
                 is_expected.to eq({ 'Unknown Title' => [{}] }.to_json)
               end
             end
@@ -87,19 +94,9 @@ module Google
             context 'title is present' do
               include_context 'allow title', 'Sample Title'
   
-              it 'is the JSON object' do
+              it 'is the JSON with the title' do
                 is_expected.to eq({ 'Sample Title' => [{}] }.to_json)
               end
-            end
-          end
-
-          context 'has errors' do
-            before do
-              allow(carousel).to receive(:errors) { ['No carousel detected'] }
-            end
-
-            it 'returns nil' do
-              is_expected.to be_nil
             end
           end
         end
@@ -107,20 +104,20 @@ module Google
         describe '#errors' do
           subject { carousel.errors }
 
-          context 'when carousel is not detected' do
+          context 'carousel not detected' do
+            let(:carousel_container) { nil }
+
             before do
               allow(document).to receive(:at_css).with(".Xdlr0d").
                 and_return carousel_container
             end
-
-            let(:carousel_container) { nil }
 
             it 'is the no carousel detected error message' do
               is_expected.to eq ['No carousel detected']
             end
           end
 
-          context 'when carousel is detected but failed to extract data' do
+          context 'carousel is detected but failed to extract data' do
             include_context 'allow carousel_container'
 
             it 'is the carousel detected, but failed to extract data error message' do
@@ -128,12 +125,12 @@ module Google
             end
           end
 
-          context 'when carousel is detected and data extraction is successful' do
+          context 'carousel is detected and data extraction is successful' do
             include_context 'allow carousel_container'
             include_context 'allow carousel_item'
             include_context 'allow title', title: 'something'
 
-            it 'is the errors' do
+            it 'is empty' do
               is_expected.to eq []
             end
           end

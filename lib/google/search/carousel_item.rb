@@ -3,7 +3,7 @@ require 'nokogiri'
 module Google
   module Search
     class CarouselItem
-      ITEM_TITLE_SELECTOR = '.BNeawe.s3v9rd.AP7Wnd'
+      ITEM_NAME_SELECTOR = '.BNeawe.s3v9rd.AP7Wnd'
       ITEM_DATE_SELECTOR = '.BNeawe.tAd8D.AP7Wnd'
 
       def initialize(item_html)
@@ -11,47 +11,34 @@ module Google
       end
 
       def to_h
-        @to_h ||=
-          {
-            "name": title,
-            "extensions": [
-              date
-            ],
-            "link": link,
-            "image": image
-          }
-      end
-
-      def errors
-        @errors ||= []
+        @to_h ||= { name:, extensions: [date], link:, image: }
       end
 
     private
-      attr_reader :item_html
+      attr_accessor :item_html
 
-      def title
-        return title_element.text if title_element && !title_element.text.empty?
+      def name
+        return name_element.text if name_element && !name_element.text.empty?
         return image_element['alt'] if image_element&.has_attribute? 'alt'
         nil
       end
 
       def date
-        return date_element&.text if date_element
-        nil
+        date_element&.text
       end
 
       def link
-        return "https://www.google.com#{item_html['href']}" if item_html.has_attribute? 'href'
-        nil
+        return nil unless item_html.has_attribute? 'href'
+        "https://www.google.com#{item_html['href']}"
       end
 
       def image
-        return image_element['src'] if image_element&.has_attribute? 'src'
-        nil
+        return nil unless image_element&.has_attribute? 'src'
+        image_element['src']
       end
 
-      def title_element
-        @title_element ||= item_html.at_css ITEM_TITLE_SELECTOR
+      def name_element
+        @name_element ||= item_html.at_css ITEM_NAME_SELECTOR
       end
 
       def date_element

@@ -62,21 +62,34 @@ module Google
         describe '#carousel_json' do
           subject { scraper.carousel_json }
 
-          context 'with a valid Google search URL' do
+          context 'invalid Google search URL' do
+            include_context 'allow url', valid: false
+
+            it { is_expected.to be_nil }
+          end
+
+          context 'unsuccessful response' do
+            include_context 'allow url', valid: false
+            include_context 'allow response', successful: true
+
+            it { is_expected.to be_nil }
+          end
+
+          context 'has carousel errors' do
+            include_context 'allow url', valid: true
+            include_context 'allow response', successful: true
+            include_context 'allow carousel', error: true
+
+            it { is_expected.to be_nil }
+          end
+
+          context 'valid Google search' do
             include_context 'allow url', valid: true
             include_context 'allow response', successful: true
             include_context 'allow carousel', error: false
 
             it 'is the carousel JSON' do
               is_expected.to eq '{"title": []}'
-            end
-          end
-      
-          context 'invalid Google search URL' do
-            include_context 'allow url', valid: false
-
-            it 'is nil' do
-              is_expected.to be_nil
             end
           end
         end
@@ -87,12 +100,13 @@ module Google
           context 'invalid Google search URL' do
             include_context 'allow url', valid: false
 
-            it 'is the invalid google url search path error' do
-              is_expected.to include 'Invalid Google URL search path'
+            it 'is the invalid google search path error' do
+              is_expected.
+                to include "Invalid Google search path, URL must begin with 'https://www.google.com/search?'"
             end
           end
       
-          context 'response is not OK' do
+          context 'unsuccessful response' do
             include_context 'allow url', valid: true
             include_context 'allow response', successful: false
 
@@ -111,12 +125,12 @@ module Google
             end
           end
 
-          context 'valid Google search URL and OK response' do
+          context 'valid Google search URL, OK response, no carousel errors' do
             include_context 'allow url', valid: true
             include_context 'allow response', successful: true
             include_context 'allow carousel', error: false
 
-            it 'is an empty array' do
+            it 'is empty' do
               is_expected.to be_empty
             end
           end
@@ -125,8 +139,6 @@ module Google
 
       context 'unit specs' do
         let(:scraper) { described_class.new url_path }
-        # NOTE: the links change each time
-        # Due to time constraints, I am writing simple, less comprehensive tests
 
         describe '#carousel_json' do
           subject { scraper.carousel_json}
@@ -136,7 +148,7 @@ module Google
               'https://www.google.com/search?q=vincent+van+gogh&sca_esv=b5e39c1845ece73b&sxsrf=ADLYWII-jheeFbltS6Cfh254BDAS5DEVCg%3A1717941448874&source=hp&ei=yLRlZr2RM662ptQP_8qnsAc&iflsig=AL9hbdgAAAAAZmXC2EWPrmhFfesgHP4_fOyrL-oVr6fE&oq=vincent+van+gough&gs_lp=Egdnd3Mtd2l6GgIYAiIRdmluY2VudCB2YW4gZ291Z2gqAggAMgcQIxixAhgnMgoQLhiABBixAxgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKSJEcUABY1BJwAHgAkAEAmAGRAaAB9Q2qAQM4Ljm4AQPIAQD4AQGYAhGgAqgOwgIEECMYJ8ICChAuGIAEGCcYigXCAgoQIxiABBgnGIoFwgILEAAYgAQYkQIYigXCAg4QLhiABBjHARiOBRivAcICDhAuGIAEGLEDGNEDGMcBwgIREC4YgAQYsQMY0QMYgwEYxwHCAgsQLhiABBixAxiDAcICChAAGIAEGEMYigXCAhcQLhiABBixAxjRAxjSAxjHARioAxiLA8ICERAAGIAEGLEDGIMBGIoFGIsDwgIUEC4YgAQYsQMYqAMYmAMYmgMYiwPCAgsQABiABBixAxiLA8ICFxAuGIAEGLEDGIMBGKgDGJgDGJoDGIsDwgIIEAAYgAQYiwPCAgsQABiABBixAxiDAcICFBAuGIAEGKYDGMcBGKgDGIsDGK8BwgIIEC4YgAQYsQPCAhcQLhiABBixAxiDARioAxiaAxiLAxibA8ICGRAuGIAEGEMYpgMYxwEYqAMYigUYiwMYrwHCAhQQLhiABBixAxiYAxioAxiaAxiLA8ICGRAuGIAEGLEDGEMYmAMYqAMYigUYmgMYiwPCAhQQLhiABBixAxiDARijAxioAxiLA8ICERAuGIAEGLEDGKgDGJoDGIsDwgIXEC4YgAQYsQMYgwEYmAMYqAMYmgMYiwPCAhEQLhiABBixAxioAxiLAxjuBcICBRAAGIAEwgIOEC4YgAQYsQMYgwEYigWYAwDiAwUSATEgQJIHBDcuMTCgB7SQAg&sclient=gws-wiz'
             end
 
-            it 'is has the title' do
+            it 'includes the title' do
               is_expected.to include 'Artworks'
             end
 
@@ -156,7 +168,7 @@ module Google
               'https://www.google.com/search?q=frank+lloyd+wright&sca_esv=23275d10bb72eb94&sxsrf=ADLYWIJIZFBXGft5dw78_-oPFv7dbvhUGw%3A1717961343369&ei=fwJmZpSgFqTcptQPjfG0qQk&gs_ssp=eJzj4tDP1TcwKs_JNmD0EkorSszLVsjJya9MUSgvykzPKAEAkFAKJg&oq=frank+&gs_lp=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&sclient=gws-wiz-serp'
             end
 
-            it 'is has the title' do
+            it 'includes the title' do
               is_expected.to include 'Structures'
             end
 
@@ -174,7 +186,7 @@ module Google
               'https://www.google.com/search?q=michelangeo&sca_esv=23275d10bb72eb94&biw=1440&bih=819&sxsrf=ADLYWIJmghqYh9pMsbTe9VFvZARPY4kBTQ%3A1717984996017&ei=5F5mZrJgwKmm1A_MvpGQCA&ved=0ahUKEwiy4qrr-M-GAxXAlIkEHUxfBIIQ4dUDCBA&uact=5&oq=michelangeo&gs_lp=Egxnd3Mtd2l6LXNlcnAaAhgCIgttaWNoZWxhbmdlbzINEC4YgAQYsQMYQxiKBTINEAAYgAQYsQMYQxiKBTIKEAAYgAQYQxiKBTIQEC4YgAQYsQMYxwEYChivATINEC4YgAQYsQMYQxiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBTINEAAYgAQYsQMYQxiKBTIQEC4YgAQYsQMYxwEYChivATIcEC4YgAQYsQMYQxiKBRiXBRjcBBjeBBjfBNgBAUj7FVAAWPYScAB4AZABAJgBgAGgAfwIqgEDNS42uAEDyAEA-AEBmAILoAKqCcICChAuGIAEGCcYigXCAgoQIxiABBgnGIoFwgIEECMYJ8ICChAuGIAEGEMYigXCAhcQLhiABBiKBRiXBRjcBBjeBBjfBNgBAcICGhAuGIAEGLEDGIMBGKYDGMcBGKgDGIsDGK8BwgIOEC4YgAQYsQMYxwEYrwHCAggQLhiABBixA5gDALoGBggBEAEYFJIHAzIuOaAHzYMC&sclient=gws-wiz-serp'
             end
 
-            it 'is has the title' do
+            it 'includes the title' do
               is_expected.to include 'Artworks'
             end
 
