@@ -69,8 +69,8 @@ module Google
           end
 
           context 'unsuccessful response' do
-            include_context 'allow url', valid: false
-            include_context 'allow response', successful: true
+            include_context 'allow url', valid: true
+            include_context 'allow response', successful: false
 
             it { is_expected.to be_nil }
           end
