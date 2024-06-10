@@ -36,7 +36,7 @@ module Google
             double 'HTTParty::Response', code: 200, body:, message: 'OK'
           end
           let(:failed_response) do
-            double 'HTTParty::Response', code: 404, body: '', message: 'Not Found'
+            double 'HTTParty::Response', code: 404, body:, message: 'Not Found'
           end
           let(:response) { successful ? successful_response : failed_response }
 
