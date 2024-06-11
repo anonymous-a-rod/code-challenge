@@ -5,9 +5,9 @@ require_relative 'carousel_item'
 module Google
   module Search
     class Carousel
-      CAROUSEL_CONTAINER_CLASS = '.Xdlr0d'
-      CAROUSEL_ITEM_CLASS = '.BVG0Nb.OxTOff'
-      CAROUSEL_TITLE_CLASS = '.BNeawe.wyrwXc.AP7Wnd'
+      CAROUSEL_CONTAINER_SELECTOR = '.Xdlr0d'
+      CAROUSEL_ITEM_SELECTOR = '.BVG0Nb.OxTOff'
+      CAROUSEL_TITLE_SELECTOR = '.BNeawe.wyrwXc.AP7Wnd'
 
       def initialize(document,
                      carousel_item_constructor: CarouselItem)
@@ -37,7 +37,7 @@ module Google
       end
 
       def title_element
-        @title_element ||= document.at_css CAROUSEL_TITLE_CLASS
+        @title_element ||= document.at_css CAROUSEL_TITLE_SELECTOR
       end
 
       def carousel_array_errors
@@ -47,7 +47,7 @@ module Google
 
       def carousel_array
         @carousel_array ||=
-          carousel_container.css(CAROUSEL_ITEM_CLASS).inject([]) do |array, item|
+          carousel_container.css(CAROUSEL_ITEM_SELECTOR).inject([]) do |array, item|
             carousel_item = carousel_item_for item
             array << carousel_item.to_h
           end
@@ -62,7 +62,7 @@ module Google
       end
 
       def carousel_container
-        @carousel_container ||= document.at_css CAROUSEL_CONTAINER_CLASS
+        @carousel_container ||= document.at_css CAROUSEL_CONTAINER_SELECTOR
       end
     end
   end
