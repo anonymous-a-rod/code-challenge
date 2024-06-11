@@ -83,7 +83,7 @@ module Google
             it { is_expected.to be_nil }
           end
 
-          context 'valid Google search' do
+          context 'valid Google search URL, OK response, no carousel errors' do
             include_context 'allow url', valid: true
             include_context 'allow response', successful: true
             include_context 'allow carousel', error: false

@@ -85,7 +85,7 @@ module Google
               }
             end
 
-            it 'is a hash with all the values present with img alt for the name value' do
+            it 'is a hash with all the values present and img alt for the name value' do
               is_expected.to eq expected_hash
             end
           end
